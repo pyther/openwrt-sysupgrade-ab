@@ -5,7 +5,12 @@ planned, you can easily boot into your previous image.
 
 The A/B upgrade approach functions by having two root parititons. When
 executing an upgrade the new image will be written to the non-active root
-partition.
+partition. The grub config is updated to allow booting into either image.
+
+At boot, you'll be able to select between either image. The most recently
+installed/upgraded image will be the default.
+* OpenWrt SNAPSHOT r15199-5d2b577a53
+* OpenWrt SNAPSHOT r15129-d346beb08c
 
 ### Partition Layout
 * /dev/sda1 = /boot
