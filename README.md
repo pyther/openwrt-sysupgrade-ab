@@ -8,9 +8,9 @@ executing an upgrade the new image will be written to the non-active root
 partition.
 
 ### Partition Layout
-/dev/sda1 = /boot
-/dev/sda2 = rootfs_a
-/dev/sda3 = rootfs_b
+* /dev/sda1 = /boot
+* /dev/sda2 = rootfs_a
+* /dev/sda3 = rootfs_b
 
 
 ### High Level Process
