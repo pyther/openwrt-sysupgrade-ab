@@ -138,9 +138,6 @@ mount $TARGET_DEV /mnt/sysupgrade || exit 1
 echo "Extracting rootfs..."
 zcat $ROOTFS | tar x -C /mnt/sysupgrade || exit 1
 
-echo "Copying kernel..."
-cp $KERNEL /mnt/sysupgrade/vmlinuz || exit 1
-
 echo "Restoring backup..."
 zcat openwrt-backup.tar.gz | tar x -C /mnt/sysupgrade || exit 1
 
@@ -154,25 +151,28 @@ a_release=$(grep OPENWRT_RELEASE /etc/os-release | cut -d'"' -f2)
 a_partuuid=$(blkid -o export $ROOT_DEV | grep PARTUUID | cut -d'=' -f2)
 a_partid=$(echo $ROOT_DEV | egrep -o '[0-9]+')
 
+echo "Copying kernel..."
+cp $KERNEL /boot/vmlinuz-$partid || exit 1
+
 cat <<EOF > /boot/grub/grub.cfg
 serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1 --rtscts=off
 terminal_input console serial; terminal_output console serial
 
 set default="0"
 set timeout="5"
-set root='(hd0,msdos1)'
+search -l kernel -s root
 
-menuentry "$release" {
-	linux (hd0,msdos${partid})/vmlinuz root=PARTUUID=$partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
+menuentry "$release $partid" {
+	linux /boot/vmlinuz-$partid root=PARTUUID=$partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
 }
-menuentry "$release (failsafe)" {
-	linux (hd0,msdos${partid})/vmlinuz failsafe=true root=PARTUUID=$partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
+menuentry "$release $partid (failsafe)" {
+	linux /boot/vmlinuz-$partid failsafe=true root=PARTUUID=$partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
 }
-menuentry "$a_release" {
-	linux (hd0,msdos${a_partid})/vmlinuz root=PARTUUID=$a_partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
+menuentry "$a_release $a_partid" {
+	linux /boot/vmlinuz-$a_partid root=PARTUUID=$a_partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
 }
-menuentry "$a_release (failsafe)" {
-	linux (hd0,msdos${a_partid})/vmlinuz failsafe=true root=PARTUUID=$a_partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
+menuentry "$a_release $a_partid (failsafe)" {
+	linux /boot/vmlinuz-$a_partid failsafe=true root=PARTUUID=$a_partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
 }
 EOF
 
