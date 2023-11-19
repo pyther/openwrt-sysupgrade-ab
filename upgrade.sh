@@ -160,7 +160,7 @@ terminal_input console serial; terminal_output console serial
 
 set default="0"
 set timeout="5"
-set root='(hd0,msdos1)'
+search -l kernel -s root
 
 menuentry "$release $partid" {
 	linux /boot/vmlinuz-$partid root=PARTUUID=$partuuid rootwait  console=tty0 console=ttyS0,115200n8 noinitrd
